@@ -1,0 +1,127 @@
+---
+_stash:
+  case_insensitive: &case_insensitive true
+  generate_base: &base_gen
+    plugin: entity_generate
+    bundle_key: vid
+    entity_type: taxonomy_term
+    value_key: name
+    ignore_case: *case_insensitive
+process:
+  field_barcode:
+    - plugin: skip_on_empty
+      method: process
+      source: barcode
+  field_flora:
+    - plugin: skip_on_empty
+      method: process
+      source: flora_classification
+    - plugin: explode
+      delimiter: ';'
+    - << : *base_gen
+      bundle: flora
+  field_fauna:
+    - plugin: skip_on_empty
+      method: process
+      source: fauna_classification
+    - plugin: explode
+      delimiter: ';'
+    - << : *base_gen
+      bundle: fauna
+  field_sex:
+    - plugin: skip_on_empty
+      method: process
+      source: sex
+  field_age:
+    - plugin: skip_on_empty
+      method: process
+      source: age
+  field_project_type:
+    - plugin: skip_on_empty
+      method: process
+      source: project_type
+  field_project_subtype:
+    - plugin: skip_on_empty
+      method: process
+      source: project_subtype
+  field_collection_type:
+    - plugin: skip_on_empty
+      method: process
+      source: collection_type
+    - << : *base_gen
+      bundle: collection_type
+  field_collection_method:
+    - plugin: skip_on_empty
+      method: process
+      source: collection_method
+    - plugin: explode
+      delimiter: ';'
+    - << : *base_gen
+      bundle: collection_method
+  field_inscription_type:
+    - plugin: skip_on_empty
+      method: process
+      source: inscription_type
+    - plugin: explode
+      delimiter: ';'
+    - << : *base_gen
+      bundle: inscription_type
+  field_country:
+    - plugin: skip_on_empty
+      method: process
+      source: country
+    - << : *base_gen
+      bundle: country
+  field_city:
+    - plugin: skip_on_empty
+      method: process
+      source: city
+    - plugin: explode
+      delimiter: ';'
+    - << : *base_gen
+      bundle: geo_location
+  field_district:
+    - plugin: skip_on_empty
+      method: process
+      source: district
+    - plugin: explode
+      delimiter: ';'
+    - << : *base_gen
+      bundle: geo_location
+  field_village:
+    - plugin: skip_on_empty
+      method: process
+      source: village
+    - plugin: explode
+      delimiter: ';'
+    - << : *base_gen
+      bundle: geo_location
+  field_ancient_sites:
+    - plugin: skip_on_empty
+      method: process
+      source: ancient_site
+    - plugin: explode
+      delimiter: ';'
+    - << : *base_gen
+      bundle: geo_location
+  field_settlement_type:
+    - plugin: skip_on_empty
+      method: process
+      source: settlement_type
+    - plugin: explode
+      delimiter: ';'
+    - << : *base_gen
+      bundle: geo_location
+  field_license:
+    - plugin: skip_on_empty
+      method: process
+      source: license
+    - plugin: entity_lookup
+      bundle_key: vid
+      entity_type: taxonomy_term
+      value_key: name
+      bundle: creative_commons_licenses_4_0
+      ignore_case: *case_insensitive
+    - plugin: skip_on_empty
+      method: row
+      message: "License provided; however, lookup failed."

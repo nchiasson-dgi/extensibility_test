@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ * General hook implementations.
+ */
+
+/**
+ * Implements hook_migration_plugins_alter().
+ */
+function extensibility_test_migration_plugins_alter(array &$migrations) {
+  $map = [
+    'dssi_node' => [
+      'alt_id' => 'migration_config_deriver:dssi_node',
+      'file' => ['inc', 'migration_alter/dssi_node'],
+      'callable' => '_extensibility_test_dssi_node_migration_alterations',
+    ],
+  ];
+  $logger = \Drupal::logger('extensibility_test');
+
+  foreach ($map as $id => $info) {
+    $actual_id = $id;
+
+    if (!isset($migrations[$actual_id])) {
+      // XXX: Because of how migrate_plus config entities are discovered via
+      // derivation and altered by migrate_plus to have a different ID, let's
+      // look for both potential names.
+      $actual_id = $info['alt_id'];
+    }
+
+    if (!isset($migrations[$actual_id])) {
+      $logger->warning('Migration ({0}, as {1}) does not exist, when trying to alter it. Existing: {existing}', [
+        0 => $id,
+        1 => $actual_id,
+        'existing' => var_export(array_keys($migrations), TRUE),
+      ]);
+      continue;
+    }
+
+    $logger->debug('Altering migration {0} ({1}).', [$id, $actual_id]);
+    \Drupal::moduleHandler()->loadInclude($info['module'] ?? 'extensibility_test', ...$info['file']);
+
+    call_user_func_array($info['callable'], [&$migrations[$actual_id]]);
+    $logger->info('Altered migration {0} ({1}).', [$id, $actual_id]);
+  }
+
+}

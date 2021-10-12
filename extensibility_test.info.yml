@@ -1,0 +1,7 @@
+name: 'Extensibility Test'
+description: "Migration test module"
+type: module
+package: DGI
+core_version_requirement: ^8 || ^9
+dependencies:
+  - dgi_standard_spreadsheet_ingest:dgi_standard_spreadsheet_ingest
